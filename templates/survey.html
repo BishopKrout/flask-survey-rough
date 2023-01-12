@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{question}}</title>
+</head>
+<body>
+    <h1>{{question.question}}</h1>
+    <form action="{{url_for('take_survey', question=current_question)}}" method="post">
+        <select name="response">
+            {% for option in question.options %}
+                <option>{{ option }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Next">
+    </form>
+</body>
+</html>

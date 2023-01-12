@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Responses</title>
+</head>
+<body>
+    <h1>Thank you for completing the survey</h1>
+    <p>Your responses have been received.</p>
+    <ul>
+        {% for key,value in responses.items() %}
+            <li>Question {{ key + 1 }}: {{ value }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
