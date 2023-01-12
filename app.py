@@ -29,10 +29,14 @@ def home():
 def take_survey():
     current_question = int(request.args.get('question',0))
     if request.method == 'POST':
-        responses[current_question] = request.form['response']
-        if current_question == len(survey.questions) -1:
-            return render_template('responses.html', responses=responses)
-        else:
+        if current_question == 0:
+            flash("Please answer the question before moving to the next")
+        else: 
+            responses[current_question] = request.form['response']
+            #process the response
+            if current_question == len(survey.questions) -1:
+                return render_template('responses.html', responses=responses)
+            else:
             current_question += 1
             return render_template('survey.html', question=survey.questions[current_question], current_question=current_question)
     else:
