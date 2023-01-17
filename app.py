@@ -1,14 +1,8 @@
-from flask import Flask, request, render_template, redirect, flash, jsonify
+from flask import Flask, request, render_template, redirect, flash, session, url_for
 from surveys import Survey, Question
-from random import randint, choice, sample
-from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
-
 app.config['SECRET_KEY'] = "shiddy"
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False 
-debug = DebugToolbarExtension(app)
-
 
 survey = Survey("Please fill out a survey about your experience with us.",
     [
@@ -19,7 +13,7 @@ survey = Survey("Please fill out a survey about your experience with us.",
         Question("Are you likely to shop here again?",["Yes", "No"]),
     ])
 
-responses = {}
+session = {}
 
 @app.route('/')
 def home():
@@ -29,18 +23,20 @@ def home():
 def take_survey():
     current_question = int(request.args.get('question',0))
     if request.method == 'POST':
-        if current_question == 0:
-            flash("Please answer the question before moving to the next")
-        else: 
-            responses[current_question] = request.form['response']
-            #process the response
-            if current_question == len(survey.questions) -1:
-                return render_template('responses.html', responses=responses)
-            else:
+        response = request.form.get('response')
+        if response:
+            session['responses'] = session.get('responses', {})
+            session['responses'][current_question] = response
             current_question += 1
-            return render_template('survey.html', question=survey.questions[current_question], current_question=current_question)
+            if current_question == len(survey.questions):
+                return render_template('responses.html', responses = session['responses'])
+            else:
+                return redirect(url_for('take_survey', question = current_question))
+        else:
+            flash('Please answer the question before moving to the next')
+            return redirect(url_for('take_survey', question = current_question))
     else:
-         return render_template("survey.html", question=survey.questions[current_question], current_question=current_question)
+        return render_template('survey.html', question = survey.questions[current_question], current_question = current_question)
+
 if __name__ == "__main__":
     app.run(debug=True)
-

@@ -1,17 +1,28 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{question}}</title>
+    <title>Customer Satisfaction Survey</title>
 </head>
 <body>
-    <h1>{{question.question}}</h1>
-    <form action="{{url_for('take_survey', question=current_question)}}" method="post">
-        <select name="response">
-            {% for option in question.options %}
-                <option>{{ option }}</option>
-            {% endfor %}
-        </select>
+    <h1>Customer Satisfaction Survey</h1>
+    <form method="POST" action="{{ url_for('take_survey', question=current_question) }}">
+        <p>Question {{ current_question + 1 }}: {{ question }}</p>
+        {% for option in question.options %}
+            <input type="radio" name="response" value="{{ option }}">{{ option}}<br>
+
+        {% endfor %}
         <input type="submit" value="Next">
+        {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
     </form>
 </body>
 </html>
